@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Sam Does Blogs]]></title><description><![CDATA[Samuel Chan blogs here about the geekier parts of his life.]]></description><link>https://lumen.netlify.com</link><generator>RSS for Node</generator><lastBuildDate>Mon, 18 Mar 2019 12:52:50 GMT</lastBuildDate><item><title><![CDATA[TWDate.getTime is not the same as Date.getTime]]></title><description><![CDATA[Be careful when calculating time when mixing your native and BPM date objects.]]></description><link>https://lumen.netlify.com/posts/psa-twdate-gettime-is-not-the-same-as-date-gettime</link><guid isPermaLink="false">https://lumen.netlify.com/posts/psa-twdate-gettime-is-not-the-same-as-date-gettime</guid><pubDate>Sun, 03 Mar 2019 05:06:20 GMT</pubDate><content:encoded>&lt;p&gt;This one you need to file away in your brain folds, because it’s one of the many odd API deversions that exist in BPM vs native JS.&lt;/p&gt;
+&lt;p&gt;From a quick glance at the &lt;a href=&quot;https://www.ibm.com/support/knowledgecenter/en/SS8JB4_18.0.0/com.ibm.wbpm.ref.doc/ae/doc/JSAPI.html#TWDate&quot;&gt;documentation&lt;/a&gt;, it looks like TWDate is a mirror of the native Javascript Date object. But if you look carefully at the documentation for the &lt;code class=&quot;language-text&quot;&gt;getTime&lt;/code&gt; method, it actually returns &lt;em&gt;seconds&lt;/em&gt; since epoch, while the JS Date returns millisconds (even &lt;code class=&quot;language-text&quot;&gt;java.util.Date&lt;/code&gt; &lt;code class=&quot;language-text&quot;&gt;getTime&lt;/code&gt; returns milliseconds!)&lt;/p&gt;
+&lt;p&gt;Run this in BPM somewhere if you want to confirm this with your own eyes:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; twDate &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;TWDate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    jsDate &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; twDate&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;toNativeDate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+tw&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;local&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;differenceInMs &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; twDate&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getTime&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; jsDate&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getTime&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The code above subtracts a TWDate’s &lt;code class=&quot;language-text&quot;&gt;getTime&lt;/code&gt; return value multiplied by 1000 (to convert to milliseconds) and
+subtracts the JS Date’s same value, to which you should get a value pretty close to zero.&lt;/p&gt;
+&lt;h2 id=&quot;thanksbut-how-does-this-affect-me&quot;&gt;&lt;a href=&quot;#thanksbut-how-does-this-affect-me&quot; aria-label=&quot;thanksbut how does this affect me permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Thanks…but how does this affect me?&lt;/h2&gt;
+&lt;p&gt;Bottom line, it’s not highly likely you’re going to mix these two date types. However, you may find yourself with an obscure bug you can’t figure out, such as calculating the time difference between two dates - it might be this.&lt;/p&gt;
+&lt;p&gt;You may find yourself needing to create a new date object, and it’s far more natural (at least for a JS dev such as myself) to use &lt;code class=&quot;language-text&quot;&gt;new Date()&lt;/code&gt; than &lt;code class=&quot;language-text&quot;&gt;new TWDate()&lt;/code&gt;, and you may accidentally find yourself writing this:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; delta &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; tw&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;local&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;serviceResult&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;createdAt&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getTime&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getTime&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;and wondering why you have negative time differences.&lt;/p&gt;
+&lt;p&gt;Just keep this in mind the next time your write a bit of date time code in BPM.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Lifetime of JavaScript in Server scripts (part 1)]]></title><description><![CDATA[A deep dive into how IBM BPM handles server scripts. When they're first executed, how often they're created]]></description><link>https://lumen.netlify.com/posts/lifetime-of-javascript-in-server-scripts-part-1/</link><guid isPermaLink="false">https://lumen.netlify.com/posts/lifetime-of-javascript-in-server-scripts-part-1/</guid><pubDate>Mon, 20 Nov 2017 14:02:56 GMT</pubDate><content:encoded>&lt;p&gt;An often under-utilised capability of IBM BPM is its ability to automatically
+load server-side JavaScript files in a process application or a toolkit.
+You may be using them in some way already, in the form of theJSON object
+which isn’t available out of the box.&lt;/p&gt;
+&lt;p&gt;The script that adds that object is nothing more than plain JS (IBM BPM’s
+embedded JS engine, Rhino, supports up to ES5), which means you can create
+your own internal libraries of functions, increasing the DRY-ness of your
+application.&lt;/p&gt;
+&lt;p&gt;But maybe you already knew this and you’re big proponent of writing good
+JS in your BPM apps. However, do you know under what conditions your bit
+of JS lives and dies?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;When is your server side JS run?&lt;/li&gt;
+&lt;li&gt;How often does it re-initialise?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;(For this post, I’ll be using the term ‘JS context’ to refer to a single
+JS execution context. For example, if you were caching values, this context
+is where your values live. Separate contexts do not share values.)&lt;/p&gt;
+&lt;p&gt;I had done some experimenting on my own and had some basic answers, but
+after reading &lt;a href=&quot;http://developer.ibm.com/answers/comments/413126/view.html&quot;&gt;this comment&lt;/a&gt;
+on dW Answers I had to conduct a full and thorough investigation!&lt;/p&gt;
+&lt;h2 id=&quot;setup&quot;&gt;&lt;a href=&quot;#setup&quot; aria-label=&quot;setup permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Setup&lt;/h2&gt;
+&lt;p&gt;Our setup has the following parts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A toolkit with the managed server JS file (“A Server JS File” toolkit)&lt;/li&gt;
+&lt;li&gt;Two identical process apps (“App 1” and “App 2”)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;the-server-js-file&quot;&gt;&lt;a href=&quot;#the-server-js-file&quot; aria-label=&quot;the server js file permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;The server JS file&lt;/h3&gt;
+&lt;p&gt;A simple log wrapper. It stores its creation timestamp and a random number
+(multiple contexts can be created in the same millisecond).&lt;/p&gt;
+&lt;p&gt;When the exported function is called, it prints out the thread name, the
+random number, timestamp, and the optional label.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;jssnap &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; __rand &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Math&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Math&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;90000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+		__when &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+		__str &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; __rand &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos; - &apos;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; __when&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;toISOString&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+	&lt;span class=&quot;token function&quot;&gt;doLog&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;init&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+	&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+		log&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; doLog
+	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;token comment&quot;&gt;//&lt;/span&gt;
+
+	&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;doLog&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;label&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+		log&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;JS Snapshot - &apos;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;
+			&lt;span class=&quot;token function&quot;&gt;padRight&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;37&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;getThreadName&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;
+			&lt;span class=&quot;token string&quot;&gt;&apos; - &apos;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; __str &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;
+			&lt;span class=&quot;token string&quot;&gt;&apos; - &apos;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;label &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+		&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;getThreadName&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; Packages&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;java&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;lang&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Thread&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;currentThread&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;name
+	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;padRight&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;len&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; str&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+	  	&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;typeof&lt;/span&gt; str &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;undefined&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+	    	&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; pad&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+		&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; pad &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;len&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos; &apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+		&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;str &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; pad&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;substring&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; len&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;the-processes-and-service&quot;&gt;&lt;a href=&quot;#the-processes-and-service&quot; aria-label=&quot;the processes and service permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;The Process(es) and Service&lt;/h3&gt;
+&lt;p&gt;The identical processes (note, the new ‘Process’ type, not BPD, but doubt either will behave differently) in each of the apps are simple:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;first step is a system service — its implementation just has a script to make a call to the JS method &lt;code class=&quot;language-text&quot;&gt;jssnap.log(‘service call from process X’)&lt;/code&gt; where ‘X’ is whichever process app it was in.&lt;/li&gt;
+&lt;li&gt;second step is a process-level script which makes a similar call &lt;code class=&quot;language-text&quot;&gt;jssnap.log(‘process script call in process X’)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Both steps are configured as a multi-instance loop = 5, to test if concurrent contexts are created and used if demand was high enough.&lt;/p&gt;
+&lt;p&gt;The service in step 1 will also be executed separately to test standalone behaviour.&lt;/p&gt;
+&lt;h2 id=&quot;test-method&quot;&gt;&lt;a href=&quot;#test-method&quot; aria-label=&quot;test method permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Test Method&lt;/h2&gt;
+&lt;p&gt;I’m running on 8.6.0, in a SingleCluster configuration for both my Center and online Server.&lt;/p&gt;
+&lt;p&gt;On the Process Center:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Run Process in App 1. Run Process in App 2.&lt;/li&gt;
+&lt;li&gt;Run standalone service in App 1. Also for App 2.&lt;/li&gt;
+&lt;li&gt;Trigger a new snapshot (make a non-functional change: update documentation, or similar) and save.&lt;/li&gt;
+&lt;li&gt;Repeat step 1 and 2.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;On the Process Server:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Install V1&lt;/li&gt;
+&lt;li&gt;Run Process in App 1. Run Process in App 2.&lt;/li&gt;
+&lt;li&gt;Run standalone service in App 1, and in App 2.&lt;/li&gt;
+&lt;li&gt;Install V2 (no function changes, as above) — leave, do not migrate&lt;/li&gt;
+&lt;li&gt;Repeat step 2 and 3 for V2&lt;/li&gt;
+&lt;li&gt;Repeat step 2 and 3 for V1&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;em&gt;The upcoming Part 2 will contain the results of the Process Server portion of the test. The Process Center results are below.&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&quot;behold-the-results-part-1-at-least&quot;&gt;&lt;a href=&quot;#behold-the-results-part-1-at-least&quot; aria-label=&quot;behold the results part 1 at least permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Behold, the results (part 1, at least)!&lt;/h2&gt;
+&lt;p&gt;The original logs are also available &lt;a href=&quot;https://gist.github.com/sammich/4361337a1e7d63188d062dd99dcfac04&quot;&gt;here&lt;/a&gt;.
+The logs below have been trimmed and emoji-fied for easier correlation.&lt;/p&gt;
+&lt;p&gt;Let’s break this down:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;When a Process is run, two contexts are created for threads named: WebContainer, WorkManager (lazy instantiation)&lt;/li&gt;
+&lt;li&gt;Running a Process (or service) from a new Snapshot, will create new contexts&lt;/li&gt;
+&lt;li&gt;WebContainer, WorkManager threads are just names — contexts are seemingly portable (e.g.: follow the 🍊)&lt;/li&gt;
+&lt;li&gt;Contexts exist for each snapshot concurrently (follow the markers below between the initial and re-runs for both apps) and are not shared&lt;/li&gt;
+&lt;li&gt;If the demand requires it, multiple contexts named ‘WorkManager’ can be created. Below we can see two always being created, but the second is never actually used&lt;/li&gt;
+&lt;li&gt;Standalone service calls are always executed on a thread named ‘WebContainer’.&lt;/li&gt;
+&lt;li&gt;(bonus — this isn’t reflected in the logs below, just trust me :) ) After a new snapshot, running a service will create a WebContainer context without creating the WorkManager context.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Emoji are used below because it&amp;#39;s easier to correlate coloured icons than letters/numbers. If you
+don&amp;#39;t see any and only see squares, I will suggest you hop over to the raw log:
+
+   https://gist.github.com/sammich/4361337a1e7d63188d062dd99dcfac04
+
+❓ - a JS context that is initialised but never actually used
+
+[log time ] [thread name:id]       [context created time]
+
+// run app 1 process
+
+[02:30:401] WebContainer:3  - 🍊 - 02:30.401 - init
+[02:30:697] WorkManager:294 - 🍏 - 02:30.697 - init
+[02:30:697] WorkManager:332 - ❓ - 02:30.697 - init
+[02:30:697] WorkManager:294 - 🍏 - 02:30.697 - service call from process 1
+[02:30:713] WorkManager:332 - 🍏 - 02:30.697 - service call from process 1
+[02:30:776] WorkManager:334 - 🍏 - 02:30.697 - service call from process 1
+[02:30:776] WorkManager:331 - 🍏 - 02:30.697 - service call from process 1
+[02:30:791] WorkManager:333 - 🍏 - 02:30.697 - service call from process 1
+[02:31:197] WorkManager:333 - 🍊 - 02:30.401 - process script call in process 1
+[02:31:213] WorkManager:333 - 🍊 - 02:30.401 - process script call in process 1
+[02:31:213] WorkManager:333 - 🍊 - 02:30.401 - process script call in process 1
+[02:31:213] WorkManager:333 - 🍊 - 02:30.401 - process script call in process 1
+[02:31:229] WorkManager:333 - 🍊 - 02:30.401 - process script call in process 1
+
+// run app 2 process
+
+[02:36:729] WebContainer:6  - ⚽️ - 02:36.729 - init
+[02:37:026] WorkManager:294 - ❓ - 02:37.026 - init
+[02:37:026] WorkManager:332 - 🏈 - 02:37.026 - init
+[02:37:041] WorkManager:332 - 🏈 - 02:37.026 - service call from process 2
+[02:37:057] WorkManager:294 - 🏈 - 02:37.026 - service call from process 2
+[02:37:120] WorkManager:335 - 🏈 - 02:37.026 - service call from process 2
+[02:37:151] WorkManager:294 - 🏈 - 02:37.026 - service call from process 2
+[02:37:166] WorkManager:332 - 🏈 - 02:37.026 - service call from process 2
+[02:37:635] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:37:651] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:37:651] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:37:666] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:37:666] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+
+// re-run app 1 process
+
+[02:50:558] WorkManager:332 - 🍏 - 02:30.697 - service call from process 1
+[02:50:558] WorkManager:294 - 🍏 - 02:30.697 - service call from process 1
+[02:50:620] WorkManager:332 - 🍏 - 02:30.697 - service call from process 1
+[02:50:620] WorkManager:294 - 🍏 - 02:30.697 - service call from process 1
+[02:50:667] WorkManager:334 - 🍏 - 02:30.697 - service call from process 1
+[02:50:933] WorkManager:336 - 🍊 - 02:30.401 - process script call in process 1
+[02:50:933] WorkManager:336 - 🍊 - 02:30.401 - process script call in process 1
+[02:50:948] WorkManager:336 - 🍊 - 02:30.401 - process script call in process 1
+[02:50:948] WorkManager:336 - 🍊 - 02:30.401 - process script call in process 1
+[02:50:964] WorkManager:336 - 🍊 - 02:30.401 - process script call in process 1
+
+// re-run app 2 process
+
+[02:55:292] WorkManager:333 - 🏈 - 02:37.026 - service call from process 2
+[02:55:292] WorkManager:331 - 🏈 - 02:37.026 - service call from process 2
+[02:55:355] WorkManager:331 - 🏈 - 02:37.026 - service call from process 2
+[02:55:355] WorkManager:333 - 🏈 - 02:37.026 - service call from process 2
+[02:55:370] WorkManager:335 - 🏈 - 02:37.026 - service call from process 2
+[02:55:605] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:55:605] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:55:605] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:55:622] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+[02:55:622] WorkManager:294 - ⚽️ - 02:36.729 - process script call in process 2
+
+// run the services by themselves
+
+[04:10:309] WebContainer:11 - 🏈 - 02:37.026 - standalone service call from app 2
+[04:20:466] WebContainer:11 - 🍏 - 02:30.697 - standalone service call from app 1
+[04:23:091] WebContainer:11 - 🏈 - 02:37.026 - standalone service call from app 2
+[04:27:685] WebContainer:11 - 🍏 - 02:30.697 - standalone service call from app 1
+
+// took a break here to do a little write up...then ran the processes again
+
+[22:30:084] WorkManager:333 - 🍏 - 02:30.697 - service call from process 1
+[22:30:084] WorkManager:331 - 🍏 - 02:30.697 - service call from process 1
+[22:30:131] WorkManager:331 - 🍏 - 02:30.697 - service call from process 1
+[22:30:131] WorkManager:333 - 🍏 - 02:30.697 - service call from process 1
+[22:30:162] WorkManager:335 - 🍏 - 02:30.697 - service call from process 1
+[22:30:490] WorkManager:294 - 🍊 - 02:30.401 - process script call in process 1
+[22:30:506] WorkManager:294 - 🍊 - 02:30.401 - process script call in process 1
+[22:30:506] WorkManager:294 - 🍊 - 02:30.401 - process script call in process 1
+[22:30:506] WorkManager:294 - 🍊 - 02:30.401 - process script call in process 1
+[22:30:521] WorkManager:294 - 🍊 - 02:30.401 - process script call in process 1
+[22:39:053] WorkManager:331 - 🏈 - 02:37.026 - service call from process 2
+[22:39:053] WorkManager:294 - 🏈 - 02:37.026 - service call from process 2
+[22:39:099] WorkManager:294 - 🏈 - 02:37.026 - service call from process 2
+[22:39:099] WorkManager:331 - 🏈 - 02:37.026 - service call from process 2
+[22:39:146] WorkManager:334 - 🏈 - 02:37.026 - service call from process 2
+[22:39:396] WorkManager:333 - ⚽️ - 02:36.729 - process script call in process 2
+[22:39:396] WorkManager:333 - ⚽️ - 02:36.729 - process script call in process 2
+[22:39:396] WorkManager:333 - ⚽️ - 02:36.729 - process script call in process 2
+[22:39:412] WorkManager:333 - ⚽️ - 02:36.729 - process script call in process 2
+[22:39:412] WorkManager:333 - ⚽️ - 02:36.729 - process script call in process 2
+
+// made a small change to trigger new snapshots to be made - re-ran both processes
+
+[26:45:486] WebContainer:0  - 🎁 - 26:45.486 - init
+[26:45:735] WorkManager:339 - 🔦 - 26:45.735 - init
+[26:45:751] WorkManager:339 - 🔦 - 26:45.735 - service call from process 1
+[26:45:766] WorkManager:333 - ❓ - 26:45.766 - init
+[26:45:907] WorkManager:333 - 🔦 - 26:45.735 - service call from process 1
+[26:45:923] WorkManager:338 - ❓ - 26:45.907 - init
+[26:45:938] WorkManager:331 - 🔦 - 26:45.735 - service call from process 1
+[26:46:001] WorkManager:338 - 🔦 - 26:45.735 - service call from process 1
+[26:46:032] WorkManager:334 - 🔥 - 26:46.032 - init
+[26:46:048] WorkManager:334 - 🔦 - 26:45.735 - service call from process 1
+[26:46:220] WorkManager:339 - 🎁 - 26:45.486 - process script call in process 1
+[26:46:220] WorkManager:339 - 🎁 - 26:45.486 - process script call in process 1
+[26:46:220] WorkManager:339 - 🎁 - 26:45.486 - process script call in process 1
+[26:46:220] WorkManager:339 - 🎁 - 26:45.486 - process script call in process 1
+[26:46:220] WorkManager:339 - 🎁 - 26:45.486 - process script call in process 1
+[26:47:454] WebContainer:0  - 💎 - 26:47.454 - init
+[26:47:720] WorkManager:341 - 💰 - 26:47.720 - init
+[26:47:720] WorkManager:339 - ❓ - 26:47.720 - init
+[26:47:735] WorkManager:341 - 💰 - 26:47.720 - service call from process 2
+[26:47:751] WorkManager:339 - 💰 - 26:47.720 - service call from process 2
+[26:47:798] WorkManager:341 - 💰 - 26:47.720 - service call from process 2
+[26:47:798] WorkManager:339 - 💰 - 26:47.720 - service call from process 2
+[26:47:813] WorkManager:342 - 💰 - 26:47.720 - service call from process 2
+[26:48:110] WorkManager:340 - 💎 - 26:47.454 - process script call in process 2
+[26:48:110] WorkManager:340 - 💎 - 26:47.454 - process script call in process 2
+[26:48:126] WorkManager:340 - 💎 - 26:47.454 - process script call in process 2
+[26:48:126] WorkManager:340 - 💎 - 26:47.454 - process script call in process 2
+[26:48:126] WorkManager:340 - 💎 - 26:47.454 - process script call in process 2&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&quot;the-takeaway-akawhat-do-i-do-with-this-info&quot;&gt;&lt;a href=&quot;#the-takeaway-akawhat-do-i-do-with-this-info&quot; aria-label=&quot;the takeaway akawhat do i do with this info permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;The takeaway (a.k.a — what do I do with this info?)&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;If you are using any caching mechanisms, or are writing potentially memory-leaky code, the short lifetimes of the JS contexts mean you’re very unlikely to run into any issues on a Center. On a Server, however, you may want to make sure your JS isn’t leaky.&lt;/li&gt;
+&lt;li&gt;Unless you have a particularly massive library of server JS in your apps/toolkits, I wouldn’t sweat any ‘JS context creation’ performance hits. It would seem to be a much bigger deal for a Process Center than Servers, in any case, due to the limited number of new snapshots on Servers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Bottom line: If your JS was good, I wouldn’t concern yourself with performance&lt;/p&gt;
+&lt;p&gt;But if you had so much in-house JS written that it actually is a concern, then there may be more significant problems than the performance hit from loading it.&lt;/p&gt;
+&lt;h2 id=&quot;remaining-questions&quot;&gt;&lt;a href=&quot;#remaining-questions&quot; aria-label=&quot;remaining questions permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Remaining Questions&lt;/h2&gt;
+&lt;h3 id=&quot;when-are-these-contexts-destroyed&quot;&gt;&lt;a href=&quot;#when-are-these-contexts-destroyed&quot; aria-label=&quot;when are these contexts destroyed permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;When are these contexts destroyed?&lt;/h3&gt;
+&lt;p&gt;Stay tuned for this in part 2.&lt;/p&gt;
+&lt;h3 id=&quot;what-is-the-lifetime-of-a-context-over-a-long-uptime-snapshot&quot;&gt;&lt;a href=&quot;#what-is-the-lifetime-of-a-context-over-a-long-uptime-snapshot&quot; aria-label=&quot;what is the lifetime of a context over a long uptime snapshot permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;What is the lifetime of a context over a long uptime snapshot?&lt;/h3&gt;
+&lt;p&gt;I’ll cover this in Part 2, as it’s much more relevant to Process Servers.&lt;/p&gt;
+&lt;h3 id=&quot;what-are-the-performance-implications&quot;&gt;&lt;a href=&quot;#what-are-the-performance-implications&quot; aria-label=&quot;what are the performance implications permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;What are the performance implications?&lt;/h3&gt;
+&lt;p&gt;For me to fully answer this question, I’ll also need to run the Process Server tests.&lt;/p&gt;
+&lt;p&gt;From a RAM usage perspective, I’ll have to do some digging around and report back.&lt;/p&gt;
+&lt;p&gt;Also, stay tuned for a micro-benchmarks post!&lt;/p&gt;
+&lt;p&gt;Also, perhaps someone can enlighten me on what Rhino optimisation setting IBM BPM is using?&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Hi. My name is Sam and I am a coder.]]></title><link>https://lumen.netlify.com/posts/hello-world/</link><guid isPermaLink="false">https://lumen.netlify.com/posts/hello-world/</guid><pubDate>Mon, 20 Nov 2017 11:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Well, I’m onto much stronger stuff than coding. I build solutions (cheesy, I know). Specifically, I specialise in
+IBM BPM — building process applications and supporting code/scripts/stuff that goes hand in hand with those projects.
+I’ve been doing it for (coming up to) the last six and a half years.&lt;/p&gt;
+&lt;p&gt;In my spare time, I’m big into web development using the the Node.js ecosystem. Specifically React (and its ecosystem).
+And all the ‘full stack’ as well. If you want the full list, check out my LinkedIn profile - for more information
+please contact me directly via one of the methods in the sidebar.&lt;/p&gt;
+&lt;p&gt;I do have a life outside of building enterprise stuff…but this place is where I’ll be making posts about technical
+stuff in my life.&lt;/p&gt;
+&lt;p&gt;So maybe you’ll see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IBM BPM-related solutions, tips, howtos, sample code&lt;/li&gt;
+&lt;li&gt;Small projects I’m working on&lt;/li&gt;
+&lt;li&gt;Micro-posts about stuff I find interesting&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In other words: things every other technical blog would have.&lt;/p&gt;</content:encoded></item></channel></rss>
