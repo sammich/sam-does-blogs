@@ -1,5 +1,5 @@
 ---
-title: There has to be a better way of working with lists 
+title: There has to be a better way to work with lists
 date: "2019-03-31T11:00:00.000Z"
 template: post
 draft: false

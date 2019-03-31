@@ -28,7 +28,7 @@ module.exports = {
     bio: `A struggling blogger that's an IBM BPM consultant on the side.`,
     contacts: {
       email: 'me@samuelchan.dev',
-      twitter: '#',
+      twitter: '@bpmsam',
       github: '#',
       rss: '#',
     }
