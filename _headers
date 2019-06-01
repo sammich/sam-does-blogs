@@ -23,10 +23,10 @@
 /pages/about/
   Link: </webpack-runtime-2e8f6378888bd8490ed6.js>; rel=preload; as=script
   Link: </0-5495c36a5388a40a52e9.js>; rel=preload; as=script
-/pages/contacts/
+/posts/hello-world/
   Link: </webpack-runtime-2e8f6378888bd8490ed6.js>; rel=preload; as=script
   Link: </0-5495c36a5388a40a52e9.js>; rel=preload; as=script
-/posts/hello-world/
+/pages/contacts/
   Link: </webpack-runtime-2e8f6378888bd8490ed6.js>; rel=preload; as=script
   Link: </0-5495c36a5388a40a52e9.js>; rel=preload; as=script
 /posts/psa-twdate-gettime-is-not-the-same-as-date-gettime
