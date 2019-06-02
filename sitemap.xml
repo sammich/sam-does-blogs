@@ -3,12 +3,13 @@
 <url> <loc>https://blog.samuelchan.dev/tags</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/categories</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/pages/about/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://blog.samuelchan.dev/posts/hello-world/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/pages/contacts/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://blog.samuelchan.dev/posts/psa-twdate-gettime-is-not-the-same-as-date-gettime</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://blog.samuelchan.dev/posts/hello-world/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/posts/initialising-business-objects-the-better-way/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://blog.samuelchan.dev/posts/lifetime-of-javascript-in-server-scripts-part-1/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://blog.samuelchan.dev/posts/psa-twdate-gettime-is-not-the-same-as-date-gettime</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://blog.samuelchan.dev/posts/the-evaluator/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/posts/working-with-ibm-bpm-lists-js/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://blog.samuelchan.dev/posts/lifetime-of-javascript-in-server-scripts-part-1/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/tag/ibm-bpm</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/tag/javascript</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/tag/psa</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
@@ -22,10 +23,13 @@
 <url> <loc>https://blog.samuelchan.dev/tag/server-scripts</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/tag/teamworks</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/tag/tips</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://blog.samuelchan.dev/tag/useful-tools</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://blog.samuelchan.dev/tag/utility</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/category/deep-dive</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/category/quick-tips</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/category/code-better</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/category/introduction</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://blog.samuelchan.dev/category/useful-tools</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://blog.samuelchan.dev/page/1</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 </urlset>
